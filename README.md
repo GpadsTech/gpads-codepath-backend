@@ -1,128 +1,159 @@
-# 🎮 GPADS CodePath — Backend
+# README — GPADS Dashboard Gamificada
 
-Backend oficial do **GPADS CodePath**.
-
-Este projeto fornece a API responsável por autenticação, usuários, desafios, atividades, pontuação, níveis, ranking e indicadores utilizados pelo frontend da plataforma.
-
-O backend foi desenvolvido em **Python + Django + Django REST Framework**, utilizando **Firebase Firestore** como banco de dados.
+## Backend — Django + Firebase Firestore
 
 ---
 
-# 1. 🎯 O que é o sistema?
+# 1. Sobre o sistema
 
-O GPADS CodePath é uma plataforma que transforma atividades e participação dos usuários em uma experiência gamificada.
+O **GPADS Dashboard Gamificada** é uma plataforma web desenvolvida para apresentar informações e indicadores do GPADS por meio de uma experiência gamificada.
 
-A ideia é permitir que o usuário:
+O sistema permitirá que usuários:
 
-* acompanhe suas atividades;
-* conclua desafios;
-* acumule pontos;
-* evolua de nível;
-* acompanhe seu desempenho;
-* visualize seu posicionamento no ranking;
-* acompanhe indicadores;
-* consulte seu histórico.
+* realizem login;
+* visualizem seu perfil;
+* acompanhem seus pontos;
+* completem desafios;
+* evoluam de nível;
+* acompanhem sua posição no ranking;
+* visualizem indicadores e informações do dashboard.
 
-Administradores terão recursos adicionais para:
+Usuários administradores terão permissões adicionais para:
 
-* cadastrar e gerenciar desafios;
-* acompanhar usuários;
-* acompanhar pontuação;
-* visualizar indicadores;
-* consultar relatórios;
-* administrar conteúdos da plataforma.
+* cadastrar desafios;
+* editar desafios;
+* excluir/desativar desafios;
+* acompanhar informações gerais;
+* visualizar indicadores administrativos.
 
----
-
-# 2. 🏗️ Arquitetura geral
-
-O sistema será dividido em três partes principais:
-
-```text
-┌─────────────────────────────────────┐
-│             FRONTEND                │
-│           React + Vite              │
-└──────────────────┬──────────────────┘
-                   │
-                   │ HTTP / REST / JSON
-                   ▼
-┌─────────────────────────────────────┐
-│              BACKEND                │
-│        Django + DRF + Python        │
-│                                     │
-│ Controller                          │
-│      ↓                              │
-│ Service                             │
-│      ↓                              │
-│ Repository Interface                │
-│      ↓                              │
-│ Firebase Repository                 │
-└──────────────────┬──────────────────┘
-                   │
-                   ▼
-┌─────────────────────────────────────┐
-│           FIREBASE                  │
-│                                     │
-│ Firebase Authentication             │
-│ Firestore                           │
-└─────────────────────────────────────┘
-```
-
-O frontend **não deve acessar diretamente o Firestore para executar as regras de negócio da aplicação**.
-
-A comunicação principal será:
+O sistema será dividido em:
 
 ```text
 Frontend
-   ↓
-API Django
-   ↓
-Services
-   ↓
-Repositories
-   ↓
-Firestore
+React + Vite
+        ↓
+API REST
+        ↓
+Backend
+Django + Django REST Framework
+        ↓
+Camada de Serviços
+        ↓
+Repository Pattern
+        ↓
+Firebase Admin SDK
+        ↓
+Firebase Firestore
 ```
 
 ---
 
-# 3. 🧠 Princípio principal da arquitetura
+# 2. Tecnologias
 
-Cada camada possui uma responsabilidade.
+## Backend
+
+* Python
+* Django
+* Django REST Framework
+* Firebase Admin SDK
+* Firebase Authentication
+* Firebase Firestore
+* Pytest
+
+## Frontend
+
+* React
+* Vite
+* JavaScript/TypeScript conforme definição da equipe de frontend
+* Consumo da API REST
+
+## Arquitetura
+
+O backend deverá seguir:
+
+* Programação Orientada a Objetos;
+* SOLID;
+* Repository Pattern;
+* separação de responsabilidades;
+* Services;
+* Controllers;
+* Schemas;
+* tratamento padronizado de erros.
+
+---
+
+# 3. Arquitetura geral
+
+A comunicação deverá seguir obrigatoriamente este fluxo:
+
+```text
+┌─────────────────────┐
+│      FRONTEND       │
+│    React + Vite     │
+└──────────┬──────────┘
+           │
+           │ HTTP / JSON
+           ▼
+┌─────────────────────┐
+│     CONTROLLER      │
+│ Recebe a requisição │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│       SERVICE       │
+│ Regras de negócio   │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ REPOSITORY INTERFACE│
+│ Contrato de acesso  │
+│ aos dados            │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│ FIREBASE REPOSITORY │
+│ Implementação       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│     FIRESTORE       │
+│ Banco de dados      │
+└─────────────────────┘
+```
+
+## Regra importante
+
+Nenhum Controller deverá acessar o Firestore diretamente.
+
+Errado:
+
+```text
+Controller → Firestore
+```
+
+Correto:
 
 ```text
 Controller
-→ recebe requisições e devolve respostas.
-
+    ↓
 Service
-→ executa as regras de negócio.
-
+    ↓
 Repository Interface
-→ define o contrato de persistência.
-
+    ↓
 Firebase Repository
-→ executa a persistência no Firestore.
-
-Model
-→ representa entidades do domínio.
-
-Schema
-→ define o formato dos dados de entrada e saída.
-
-Middleware
-→ executa validações/interceptações da requisição.
-
-Exception
-→ representa erros específicos do domínio.
+    ↓
+Firestore
 ```
 
-Regra fundamental:
-
-> **Não colocar toda a lógica em uma única classe.**
+Isso permite que as regras de negócio permaneçam separadas da persistência dos dados.
 
 ---
 
-# 4. 📁 Estrutura do projeto
+# 4. Estrutura do backend
 
 ```text
 backend/
@@ -132,93 +163,379 @@ backend/
 │   ├── main.py
 │   │
 │   ├── config/
+│   │   ├── __init__.py
 │   │   ├── settings.py
 │   │   ├── firebase.py
 │   │   ├── urls.py
+│   │   ├── views.py
 │   │   ├── asgi.py
 │   │   └── wsgi.py
 │   │
 │   ├── controllers/
-│   │   ├── auth_controller.py
+│   │   ├── __init__.py
 │   │   ├── user_controller.py
 │   │   ├── challenge_controller.py
 │   │   ├── points_controller.py
 │   │   ├── ranking_controller.py
-│   │   └── report_controller.py
+│   │   └── dashboard_controller.py
 │   │
 │   ├── services/
-│   │   ├── auth_service.py
+│   │   ├── __init__.py
 │   │   ├── user_service.py
 │   │   ├── challenge_service.py
 │   │   ├── points_service.py
 │   │   ├── ranking_service.py
-│   │   └── report_service.py
+│   │   └── dashboard_service.py
 │   │
 │   ├── repositories/
+│   │   ├── __init__.py
+│   │   │
 │   │   ├── interfaces/
+│   │   │   ├── __init__.py
 │   │   │   ├── user_repository.py
 │   │   │   ├── challenge_repository.py
-│   │   │   └── points_repository.py
+│   │   │   ├── points_repository.py
+│   │   │   └── report_repository.py
 │   │   │
 │   │   └── firebase/
+│   │       ├── __init__.py
 │   │       ├── firebase_user_repository.py
 │   │       ├── firebase_challenge_repository.py
-│   │       └── firebase_points_repository.py
+│   │       ├── firebase_points_repository.py
+│   │       └── firebase_report_repository.py
 │   │
 │   ├── models/
+│   │   ├── __init__.py
 │   │   ├── user.py
 │   │   ├── challenge.py
 │   │   ├── points.py
 │   │   └── report.py
 │   │
 │   ├── schemas/
+│   │   ├── __init__.py
 │   │   ├── user_schema.py
 │   │   ├── challenge_schema.py
 │   │   ├── points_schema.py
-│   │   └── report_schema.py
+│   │   └── dashboard_schema.py
 │   │
 │   ├── middleware/
+│   │   ├── __init__.py
 │   │   └── auth_middleware.py
 │   │
 │   └── exceptions/
-│       ├── user_exceptions.py
-│       ├── challenge_exceptions.py
-│       └── auth_exceptions.py
+│       ├── __init__.py
+│       └── application_exceptions.py
 │
 ├── credentials/
 │   └── firebase-service-account.json
 │
 ├── tests/
+│   ├── test_firebase.py
+│   ├── test_users.py
+│   ├── test_challenges.py
+│   ├── test_points.py
+│   └── test_ranking.py
 │
-├── manage.py
-├── requirements.txt
-├── pytest.ini
 ├── .env
 ├── .env.example
-└── .gitignore
+├── .gitignore
+├── requirements.txt
+├── pytest.ini
+└── manage.py
 ```
 
 ---
 
-# 5. 🔥 Firebase
+# 5. Responsabilidade de cada camada
 
-O banco principal da aplicação é o:
+## 5.1 `config/`
 
-**Firebase Firestore**
+Responsável pelas configurações gerais da aplicação.
 
-As credenciais são carregadas através do `.env`.
+### `settings.py`
 
-```env
-FIREBASE_CREDENTIALS_PATH=credentials/firebase-service-account.json
-```
+Configura:
 
-O arquivo de credenciais nunca deve ser enviado para o Git.
+* Django;
+* Django REST Framework;
+* CORS;
+* variáveis de ambiente;
+* timezone;
+* aplicações instaladas.
+
+Não deve conter regras de negócio.
 
 ---
 
-# 6. 🗃️ Estrutura inicial do Firestore
+### `firebase.py`
 
-A estrutura inicial será:
+Responsável exclusivamente por:
+
+* carregar as credenciais;
+* inicializar o Firebase Admin SDK;
+* criar a conexão com o Firestore;
+* disponibilizar a instância do Firestore.
+
+Exemplo:
+
+```python
+class FirebaseConfig:
+    """
+    Responsável pela inicialização do Firebase Admin SDK
+    e disponibilização do Firestore.
+    """
+```
+
+---
+
+### `urls.py`
+
+Responsável pelo roteamento das URLs da API.
+
+Exemplo:
+
+```text
+/api/users/
+/api/challenges/
+/api/ranking/
+/api/dashboard/
+```
+
+Não deve conter regras complexas.
+
+---
+
+# 6. Controllers
+
+Controllers representam a camada HTTP.
+
+Responsabilidades:
+
+* receber requisições;
+* extrair parâmetros;
+* validar informações básicas;
+* chamar o Service;
+* retornar HTTP Response;
+* utilizar os status HTTP adequados.
+
+O Controller **não deve implementar regras de negócio**.
+
+Exemplo:
+
+```python
+class UserController:
+    """
+    Responsável por receber as requisições HTTP relacionadas
+    aos usuários e encaminhá-las para o UserService.
+    """
+```
+
+---
+
+# 7. Services
+
+Services concentram as regras de negócio.
+
+Exemplo:
+
+```python
+class PointsService:
+    """
+    Responsável pelas regras relacionadas à pontuação.
+
+    Deve:
+    - registrar pontos;
+    - calcular pontuação;
+    - verificar evolução de nível;
+    - impedir operações inválidas.
+    """
+```
+
+Os Services não devem conhecer detalhes de HTTP.
+
+Não devem retornar `JsonResponse`.
+
+---
+
+# 8. Repository Interfaces
+
+As interfaces definem o contrato de persistência.
+
+Exemplo:
+
+```python
+class IUserRepository:
+    """
+    Define o contrato que qualquer implementação de
+    persistência de usuários deve seguir.
+
+    A Service conhece esta interface,
+    mas não precisa saber que o banco utilizado é Firestore.
+    """
+```
+
+Exemplo de operações:
+
+```text
+get_by_id()
+get_all()
+create()
+update()
+delete()
+```
+
+---
+
+# 9. Firebase Repositories
+
+São as implementações reais das interfaces utilizando Firestore.
+
+Exemplo:
+
+```python
+class FirebaseUserRepository:
+    """
+    Implementa IUserRepository utilizando Firebase Firestore.
+
+    É responsável exclusivamente pela comunicação
+    com a coleção de usuários.
+    """
+```
+
+O Repository deve saber:
+
+* qual coleção acessar;
+* como buscar documentos;
+* como criar documentos;
+* como atualizar documentos;
+* como excluir/desativar documentos.
+
+Não deve decidir regras de negócio.
+
+---
+
+# 10. Models
+
+Representam as entidades do domínio.
+
+Principais entidades:
+
+```text
+User
+Challenge
+Points
+Report
+```
+
+### User
+
+Representa o usuário da plataforma.
+
+Exemplo:
+
+```json
+{
+    "name": "Nome do usuário",
+    "email": "email@email.com",
+    "role": "user",
+    "points": 0,
+    "level": 1
+}
+```
+
+---
+
+### Challenge
+
+Representa um desafio.
+
+```json
+{
+    "title": "Desafio exemplo",
+    "description": "Descrição",
+    "points": 100,
+    "difficulty": "medium",
+    "status": "active"
+}
+```
+
+---
+
+### Points
+
+Representa uma movimentação de pontuação.
+
+```json
+{
+    "userId": "abc123",
+    "challengeId": "challenge01",
+    "points": 100,
+    "reason": "Desafio concluído"
+}
+```
+
+---
+
+# 11. Schemas
+
+Schemas definem o formato dos dados recebidos e enviados pela API.
+
+Exemplo:
+
+```python
+class UserResponseSchema:
+    """
+    Define o formato dos dados de usuário
+    que poderão ser enviados ao frontend.
+    """
+```
+
+O objetivo é evitar que o backend envie dados desnecessários ou inconsistentes.
+
+---
+
+# 12. Middleware de autenticação
+
+O `auth_middleware.py` será responsável por validar o token do Firebase Authentication.
+
+Fluxo:
+
+```text
+Frontend
+   ↓
+Firebase Authentication
+   ↓
+Token
+   ↓
+Django API
+   ↓
+Auth Middleware
+   ↓
+Validação do token
+   ↓
+Controller
+```
+
+O backend deverá identificar:
+
+* UID;
+* usuário;
+* role/permissão.
+
+Exemplo:
+
+```text
+role = user
+role = admin
+```
+
+---
+
+# 13. Firebase Firestore
+
+O banco principal da aplicação será o **Firebase Firestore**.
+
+Estrutura inicial:
 
 ```text
 Firestore
@@ -232,11 +549,7 @@ Firestore
 └── reports
 ```
 
----
-
-## 6.1 `users`
-
-Representa os usuários.
+## `users`
 
 ```text
 users/{uid}
@@ -246,1723 +559,1166 @@ Exemplo:
 
 ```json
 {
-  "name": "Nome do usuário",
-  "email": "usuario@email.com",
-  "role": "user",
-  "points": 0,
-  "level": 1,
-  "createdAt": "timestamp"
+    "name": "Nathália",
+    "email": "usuario@email.com",
+    "role": "user",
+    "points": 250,
+    "level": 3,
+    "createdAt": "timestamp"
 }
 ```
 
 ---
 
-## 6.2 `challenges`
-
-Representa os desafios.
+## `challenges`
 
 ```text
 challenges/{challengeId}
 ```
 
-Exemplo:
-
-```json
-{
-  "title": "Nome do desafio",
-  "description": "Descrição",
-  "points": 100,
-  "difficulty": "medium",
-  "status": "active",
-  "createdAt": "timestamp"
-}
-```
-
 ---
 
-## 6.3 `points`
-
-Representa o histórico de pontuação.
+## `points`
 
 ```text
 points/{pointId}
 ```
 
-Exemplo:
+---
+
+## `reports`
+
+Será utilizada para os indicadores necessários ao dashboard.
+
+A estrutura definitiva deverá ser definida conforme os indicadores forem fechados.
+
+---
+
+# 14. Ranking
+
+Inicialmente não será criada uma coleção exclusiva para ranking.
+
+O ranking poderá ser obtido através da pontuação dos usuários:
+
+```text
+users
+   ↓
+ordenar por points
+   ↓
+ranking
+```
+
+Isso evita duplicação de informações.
+
+---
+
+# 15. Contrato da API
+
+O contrato da API deve ser definido **antes da implementação completa**.
+
+Isso permite que Alane e Samara desenvolvam o frontend enquanto Carlos e Jonathan desenvolvem o backend.
+
+O frontend não deve precisar esperar o backend inteiro ficar pronto.
+
+---
+
+# 16. Padrão de resposta
+
+Todas as respostas deverão seguir um padrão consistente.
+
+## Sucesso
 
 ```json
 {
-  "userId": "uid",
-  "challengeId": "challengeId",
-  "points": 100,
-  "reason": "Desafio concluído",
-  "createdAt": "timestamp"
+    "success": true,
+    "data": {}
 }
 ```
-
----
-
-## 6.4 `reports`
-
-Representará informações utilizadas pelos indicadores e relatórios.
-
-A estrutura definitiva será definida conforme os indicadores forem implementados.
-
----
-
-# 7. 👥 Usuários e papéis
-
-O sistema terá, inicialmente, dois papéis:
-
-```text
-user
-admin
-```
-
-### User
-
-Pode:
-
-* visualizar seu perfil;
-* visualizar desafios disponíveis;
-* concluir atividades;
-* ganhar pontos;
-* acompanhar seu nível;
-* visualizar ranking;
-* visualizar seus indicadores.
-
-### Admin
-
-Pode, conforme as permissões definidas:
-
-* gerenciar desafios;
-* consultar usuários;
-* acompanhar pontuação;
-* consultar indicadores;
-* consultar relatórios.
-
-As permissões devem ser verificadas no backend.
-
-**Nunca confiar somente no frontend para impedir uma operação administrativa.**
-
----
-
-# 8. 🔐 Autenticação
-
-A autenticação será baseada no:
-
-**Firebase Authentication**
-
-O frontend fará o login e receberá um token.
-
-Esse token será enviado para a API:
-
-```http
-Authorization: Bearer <TOKEN>
-```
-
-O backend deverá:
-
-1. receber o token;
-2. validar o token;
-3. identificar o usuário;
-4. verificar seu papel;
-5. permitir ou negar a operação.
-
-Fluxo:
-
-```text
-Frontend
-   │
-   │ Login
-   ▼
-Firebase Authentication
-   │
-   │ ID Token
-   ▼
-Frontend
-   │
-   │ Authorization: Bearer TOKEN
-   ▼
-Django
-   │
-   ▼
-Auth Middleware
-   │
-   ├── válido → Controller
-   │
-   └── inválido → 401
-```
-
----
-
-# 9. 🧱 Responsabilidade de cada classe
-
-## 9.1 `FirebaseConfig`
-
-Arquivo:
-
-```text
-app/config/firebase.py
-```
-
-Responsabilidade:
-
-* carregar credenciais;
-* inicializar Firebase Admin SDK;
-* fornecer acesso ao Firestore.
-
-Não deve:
-
-* calcular pontos;
-* validar desafios;
-* manipular usuários;
-* implementar regras de negócio.
-
----
-
-# 10. 🎮 Controllers
-
-Os Controllers são a porta de entrada da API.
-
-Eles recebem:
-
-```text
-HTTP Request
-```
-
-e devolvem:
-
-```text
-HTTP Response
-```
-
----
-
-## `AuthController`
-
-Responsável por endpoints relacionados à autenticação e informações do usuário autenticado.
-
-Não deve implementar a validação do Firebase diretamente.
-
-Essa responsabilidade fica no middleware/service.
-
----
-
-## `UserController`
-
-Responsável por:
-
-* buscar usuário;
-* atualizar perfil;
-* consultar informações do usuário;
-* retornar dados necessários para o dashboard.
-
----
-
-## `ChallengeController`
-
-Responsável por:
-
-* listar desafios;
-* consultar desafio;
-* criar desafio;
-* atualizar desafio;
-* desativar desafio;
-* concluir desafio.
-
----
-
-## `PointsController`
-
-Responsável por:
-
-* consultar pontuação;
-* consultar histórico;
-* retornar informações de pontos.
-
-A regra de atribuição dos pontos fica no Service.
-
----
-
-## `RankingController`
-
-Responsável por:
-
-* retornar ranking;
-* consultar posição do usuário;
-* consultar usuários próximos na classificação.
-
----
-
-## `ReportController`
-
-Responsável por:
-
-* retornar indicadores;
-* consultar métricas;
-* retornar dados necessários aos gráficos.
-
----
-
-# 11. 🧠 Services
-
-Os Services possuem as regras de negócio.
-
----
-
-## `AuthService`
-
-Responsável por:
-
-* validar informações do usuário;
-* consultar perfil;
-* verificar papel;
-* aplicar regras relacionadas à autenticação.
-
----
-
-## `UserService`
-
-Responsável por:
-
-* criar perfil;
-* consultar perfil;
-* atualizar perfil;
-* validar operações permitidas.
-
----
-
-## `ChallengeService`
-
-Responsável pelas regras dos desafios.
-
-Exemplos:
-
-```text
-Usuário pode concluir?
-Desafio está ativo?
-Usuário já concluiu?
-Quantos pontos recebe?
-```
-
----
-
-## `PointsService`
-
-Responsável por:
-
-* registrar pontos;
-* validar pontuação;
-* atualizar saldo;
-* consultar histórico;
-* calcular evolução.
-
----
-
-## `RankingService`
-
-Responsável por:
-
-* calcular classificação;
-* ordenar usuários;
-* determinar posição;
-* tratar empates.
-
----
-
-## `ReportService`
-
-Responsável por:
-
-* consolidar dados;
-* calcular indicadores;
-* preparar informações para gráficos;
-* gerar métricas para o dashboard.
-
----
-
-# 12. 🗄️ Repositories
-
-Repositories são responsáveis exclusivamente pela persistência.
-
-Exemplo:
-
-```text
-UserService
-     │
-     ▼
-IUserRepository
-     │
-     ▼
-FirebaseUserRepository
-     │
-     ▼
-Firestore
-```
-
-O Service não deve conhecer os detalhes do Firestore.
-
----
-
-# 13. 📜 Interfaces
-
-As interfaces definem o contrato dos repositories.
-
-Exemplo:
-
-```python
-class IUserRepository:
-
-    def find_by_id(self, user_id):
-        pass
-
-    def create(self, user):
-        pass
-
-    def update(self, user_id, data):
-        pass
-```
-
-A implementação Firebase:
-
-```python
-class FirebaseUserRepository(IUserRepository):
-
-    def find_by_id(self, user_id):
-        ...
-
-    def create(self, user):
-        ...
-
-    def update(self, user_id, data):
-        ...
-```
-
-Isso permite testar Services sem depender diretamente do Firebase.
-
----
-
-# 14. 📦 Models
-
-Models representam as entidades do domínio.
-
-Principais:
-
-```text
-User
-Challenge
-Points
-Report
-```
-
-Exemplo:
-
-```python
-class User:
-    def __init__(
-        self,
-        id,
-        name,
-        email,
-        role,
-        points,
-        level
-    ):
-        self.id = id
-        self.name = name
-        self.email = email
-        self.role = role
-        self.points = points
-        self.level = level
-```
-
-O Model não deve ser responsável por acessar Firestore.
-
----
-
-# 15. 📥📤 Schemas
-
-Schemas definem os contratos dos dados.
 
 Exemplo:
 
 ```json
 {
-  "name": "Nathália",
-  "email": "nathalia@email.com"
+    "success": true,
+    "data": {
+        "id": "123",
+        "name": "Nathália",
+        "points": 250,
+        "level": 3
+    }
 }
 ```
 
-O Schema determina:
-
-* campos obrigatórios;
-* tipos;
-* estrutura;
-* validações básicas.
-
----
-
-# 16. 🔌 CONTRATO DA API
-
-Esta é uma das partes mais importantes para a integração entre backend e frontend.
-
-O frontend e o backend devem concordar antecipadamente sobre:
-
-* URL;
-* método HTTP;
-* autenticação;
-* parâmetros;
-* corpo da requisição;
-* resposta;
-* códigos HTTP;
-* mensagens de erro.
-
----
-
-# 17. 📋 Padrão de resposta
-
-As respostas da API devem seguir um padrão consistente.
-
-### Sucesso
+## Erro
 
 ```json
 {
-  "success": true,
-  "data": {}
+    "success": false,
+    "error": {
+        "code": "USER_NOT_FOUND",
+        "message": "Usuário não encontrado."
+    }
 }
 ```
-
-### Erro
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": "USER_NOT_FOUND",
-    "message": "Usuário não encontrado."
-  }
-}
-```
-
-O frontend não deve precisar interpretar dezenas de formatos diferentes de resposta.
 
 ---
 
-# 18. 👤 API — Usuários
+# 17. Status HTTP
 
-## Buscar usuário
+Utilizar corretamente:
+
+```text
+200 OK
+```
+
+Requisição executada com sucesso.
+
+```text
+201 CREATED
+```
+
+Recurso criado.
+
+```text
+400 BAD REQUEST
+```
+
+Dados inválidos.
+
+```text
+401 UNAUTHORIZED
+```
+
+Usuário não autenticado.
+
+```text
+403 FORBIDDEN
+```
+
+Usuário autenticado, mas sem permissão.
+
+```text
+404 NOT FOUND
+```
+
+Recurso não encontrado.
+
+```text
+500 INTERNAL SERVER ERROR
+```
+
+Erro inesperado no servidor.
+
+---
+
+# 18. Endpoints iniciais
+
+## Usuários
 
 ```http
 GET /api/users/{userId}/
 ```
 
-Resposta:
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": "abc123",
-    "name": "Nathália",
-    "email": "nathalia@email.com",
-    "role": "user",
-    "points": 850,
-    "level": 3
-  }
-}
-```
-
----
-
-## Atualizar usuário
+Retorna informações do usuário.
 
 ```http
 PATCH /api/users/{userId}/
 ```
 
-Request:
-
-```json
-{
-  "name": "Novo nome"
-}
-```
-
-Resposta:
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": "abc123",
-    "name": "Novo nome"
-  }
-}
-```
+Atualiza informações permitidas do usuário.
 
 ---
 
-# 19. 🎯 API — Desafios
-
-## Listar desafios
+## Desafios
 
 ```http
 GET /api/challenges/
 ```
 
-Resposta:
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "challenge01",
-      "title": "Completar atividade",
-      "description": "Complete a atividade proposta.",
-      "points": 100,
-      "difficulty": "medium",
-      "status": "active"
-    }
-  ]
-}
-```
-
----
-
-## Buscar desafio
+Lista desafios.
 
 ```http
 GET /api/challenges/{challengeId}/
 ```
 
----
-
-## Criar desafio
-
-Somente admin.
+Retorna um desafio específico.
 
 ```http
 POST /api/challenges/
 ```
 
-Request:
-
-```json
-{
-  "title": "Novo desafio",
-  "description": "Descrição do desafio",
-  "points": 100,
-  "difficulty": "medium"
-}
-```
-
----
-
-## Atualizar desafio
-
-Somente admin.
+Cria desafio.
 
 ```http
 PATCH /api/challenges/{challengeId}/
 ```
 
----
-
-## Desativar desafio
-
-Somente admin.
+Atualiza desafio.
 
 ```http
 DELETE /api/challenges/{challengeId}/
 ```
 
-A exclusão física deve ser evitada quando houver necessidade de preservar histórico.
-
-Preferir desativação:
-
-```json
-{
-  "status": "inactive"
-}
-```
+Desativa/exclui desafio conforme a regra definida.
 
 ---
 
-# 20. ⭐ API — Pontuação
-
-## Consultar pontuação
+## Pontuação
 
 ```http
 GET /api/users/{userId}/points/
 ```
 
-Resposta:
-
-```json
-{
-  "success": true,
-  "data": {
-    "total": 850,
-    "level": 3
-  }
-}
-```
-
----
-
-## Histórico de pontos
+Retorna pontuação atual.
 
 ```http
 GET /api/users/{userId}/points/history/
 ```
 
-Resposta:
+Retorna histórico de pontuação.
+
+---
+
+## Conclusão de desafio
+
+```http
+POST /api/challenges/{challengeId}/complete/
+```
+
+Responsável por registrar a conclusão do desafio e aplicar os pontos correspondentes.
+
+Exemplo de resposta:
 
 ```json
 {
-  "success": true,
-  "data": [
-    {
-      "id": "point01",
-      "challengeId": "challenge01",
-      "points": 100,
-      "reason": "Desafio concluído",
-      "createdAt": "2026-10-04T20:00:00Z"
+    "success": true,
+    "data": {
+        "challengeId": "challenge01",
+        "pointsEarned": 100,
+        "totalPoints": 350,
+        "level": 4
     }
-  ]
 }
 ```
 
 ---
 
-# 21. 🏆 API — Ranking
-
-## Ranking geral
+## Ranking
 
 ```http
 GET /api/ranking/
 ```
 
-Resposta:
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "position": 1,
-      "userId": "user01",
-      "name": "Usuário 1",
-      "points": 1500,
-      "level": 5
-    },
-    {
-      "position": 2,
-      "userId": "user02",
-      "name": "Usuário 2",
-      "points": 1200,
-      "level": 4
-    }
-  ]
-}
-```
-
----
-
-## Posição do usuário
+Retorna ranking geral.
 
 ```http
 GET /api/ranking/me/
 ```
 
-Resposta:
-
-```json
-{
-  "success": true,
-  "data": {
-    "position": 8,
-    "points": 850,
-    "level": 3
-  }
-}
-```
+Retorna posição do usuário autenticado.
 
 ---
 
-# 22. 📊 API — Dashboard e relatórios
-
-O frontend precisará de dados para alimentar:
-
-* cards;
-* gráficos;
-* ranking;
-* progresso;
-* indicadores;
-* histórico.
-
-Exemplo:
+## Dashboard
 
 ```http
 GET /api/dashboard/
 ```
 
-Resposta:
+Retorna os indicadores necessários para o dashboard.
 
-```json
-{
-  "success": true,
-  "data": {
-    "points": 850,
-    "level": 3,
-    "completedChallenges": 12,
-    "rankingPosition": 8,
-    "progress": 72
-  }
-}
-```
-
-A ideia é evitar que o frontend precise fazer várias requisições para montar uma única tela quando isso puder ser resolvido adequadamente no backend.
+O formato final deverá ser definido em conjunto com Alane e Samara.
 
 ---
 
-# 23. 📡 Contrato API × Frontend
+# 19. Como Carlos e Jonathan devem trabalhar com Alane e Samara
 
-O frontend deve consumir apenas os contratos definidos.
+O backend **não precisa estar 100% pronto para o frontend começar**.
+
+O trabalho deverá acontecer através do contrato da API.
 
 Exemplo:
+
+Carlos e Jonathan definem:
+
+```http
+GET /api/ranking/
+```
+
+Resposta esperada:
+
+```json
+{
+    "success": true,
+    "data": [
+        {
+            "position": 1,
+            "userId": "001",
+            "name": "Usuário 1",
+            "points": 1000
+        },
+        {
+            "position": 2,
+            "userId": "002",
+            "name": "Usuário 2",
+            "points": 850
+        }
+    ]
+}
+```
+
+Alane e Samara podem desenvolver o componente utilizando exatamente essa estrutura, mesmo antes do endpoint existir.
+
+Inicialmente:
 
 ```text
 Frontend
-   │
-   │ GET /api/dashboard/
-   ▼
-Backend
-   │
-   ▼
-DashboardService
-   │
-   ▼
-Repositories
-   │
-   ▼
-Firestore
-```
-
-O frontend não precisa saber:
-
-```text
-como o Firestore funciona
-como a collection está estruturada
-como os dados são consultados
-como os pontos são calculados
-```
-
-Ele só precisa conhecer:
-
-```text
-endpoint
-request
-response
-```
-
----
-
-# 24. 🔴 Códigos HTTP
-
-Usar códigos HTTP de forma consistente.
-
-```text
-200 OK
-→ operação realizada.
-
-201 CREATED
-→ recurso criado.
-
-204 NO CONTENT
-→ operação realizada sem conteúdo de retorno.
-
-400 BAD REQUEST
-→ dados enviados são inválidos.
-
-401 UNAUTHORIZED
-→ usuário não autenticado.
-
-403 FORBIDDEN
-→ usuário autenticado, mas sem permissão.
-
-404 NOT FOUND
-→ recurso não encontrado.
-
-409 CONFLICT
-→ conflito de estado/dados.
-
-500 INTERNAL SERVER ERROR
-→ erro inesperado no backend.
-```
-
----
-
-# 25. ⚠️ Contrato de erros
-
-Exemplo:
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": "CHALLENGE_ALREADY_COMPLETED",
-    "message": "Este desafio já foi concluído pelo usuário."
-  }
-}
-```
-
-O frontend poderá utilizar o `code` para tomar decisões.
-
-Não depender apenas da mensagem textual.
-
----
-
-# 26. 🔄 Exemplo completo
-
-Usuário conclui desafio.
-
-### Frontend
-
-```http
-POST /api/challenges/challenge01/complete/
-Authorization: Bearer TOKEN
-```
-
-### Backend
-
-```text
-AuthMiddleware
-       ↓
-ChallengeController
-       ↓
-ChallengeService
-       ↓
-ChallengeRepository
-       ↓
-Firestore
+   ↓
+Mock JSON
 ```
 
 Depois:
 
 ```text
-ChallengeService
+Frontend
+   ↓
+API Django
+```
+
+O componente não precisa ser refeito.
+
+---
+
+# 20. Camada de serviço do frontend
+
+Para facilitar a integração, Alane e Samara deverão evitar chamadas HTTP espalhadas pelos componentes.
+
+Exemplo:
+
+```text
+frontend/
+└── src/
+    └── services/
+        ├── api.js
+        ├── userService.js
+        ├── challengeService.js
+        ├── rankingService.js
+        └── dashboardService.js
+```
+
+Assim:
+
+```text
+Componente React
        ↓
-PointsService
+Service
        ↓
-PointsRepository
+API Django
+```
+
+Durante o desenvolvimento:
+
+```text
+Componente
+       ↓
+Service
+       ↓
+Mock
+```
+
+Depois:
+
+```text
+Componente
+       ↓
+Service
+       ↓
+Django API
        ↓
 Firestore
 ```
 
-Resposta:
-
-```json
-{
-  "success": true,
-  "data": {
-    "challengeId": "challenge01",
-    "completed": true,
-    "pointsEarned": 100,
-    "totalPoints": 950,
-    "level": 3,
-    "levelUp": false
-  }
-}
-```
-
-O frontend simplesmente utiliza esses dados para atualizar a interface.
-
 ---
 
-# 27. 👥 Divisão de responsabilidades
+# 21. Divisão de responsabilidades
 
-## 👨‍💻 Carlos — Backend / Regras e API
+## Carlos — Backend / Regras de negócio e API
 
-Carlos ficará principalmente responsável pela camada de aplicação.
-
-### Responsabilidades
+Carlos ficará principalmente responsável por:
 
 * Controllers;
 * Services;
 * regras de negócio;
 * autenticação;
 * autorização;
-* integração dos endpoints;
-* tratamento das respostas;
-* integração final com o frontend;
-* testes dos Services.
+* middleware;
+* endpoints;
+* padronização das respostas;
+* integração HTTP;
+* testes dos Services;
+* integração geral da API.
 
-### Principais arquivos
+### Principais classes
 
 ```text
-controllers/
-services/
-middleware/
-exceptions/
+UserController
+UserService
+
+ChallengeController
+ChallengeService
+
+PointsController
+PointsService
+
+RankingController
+RankingService
+
+DashboardController
+DashboardService
 ```
 
-Carlos deverá trabalhar em conjunto com Jonathan quando uma funcionalidade depender do Repository.
+Carlos deverá garantir que a API esteja pronta para ser consumida pelo frontend.
 
 ---
 
-# 28. 👨‍💻 Jonathan — Backend / Dados e Firebase
+# 22. Jonathan — Backend / Dados e Firestore
 
-Jonathan ficará principalmente responsável pela camada de persistência.
-
-### Responsabilidades
+Jonathan ficará principalmente responsável por:
 
 * Models;
 * Schemas;
 * Repository Interfaces;
 * Firebase Repositories;
-* Firestore;
-* estrutura das collections;
-* consultas;
+* estrutura do Firestore;
 * operações CRUD;
+* persistência;
 * testes dos Repositories;
-* integração Firebase.
+* configuração relacionada ao acesso aos dados.
 
-### Principais arquivos
+### Principais classes
 
 ```text
-models/
-schemas/
-repositories/
-config/firebase.py
+User
+Challenge
+Points
+Report
+
+IUserRepository
+IChallengeRepository
+IPointsRepository
+IReportRepository
+
+FirebaseUserRepository
+FirebaseChallengeRepository
+FirebasePointsRepository
+FirebaseReportRepository
 ```
+
+Jonathan deverá garantir que os dados possam ser corretamente armazenados e recuperados pelo Service.
 
 ---
 
-# 29. 🤝 Trabalho conjunto
+# 23. Responsabilidades compartilhadas
 
-Algumas partes não pertencem exclusivamente a uma pessoa.
-
-Carlos e Jonathan devem trabalhar juntos em:
+Carlos e Jonathan deverão trabalhar juntos em:
 
 * definição do contrato da API;
-* definição dos documentos Firestore;
 * autenticação;
+* integração com Firebase;
+* decisões de arquitetura;
 * testes de integração;
-* revisão de código;
-* integração com frontend;
 * correção de bugs;
-* documentação.
+* revisão de código;
+* documentação;
+* integração com Alane e Samara.
 
-A regra é:
+Nenhum dos dois deve trabalhar isoladamente durante toda a sprint.
+
+O contrato da API deve ser discutido antes da implementação de cada funcionalidade.
+
+---
+
+# 24. Cronograma real do projeto
+
+## Prazo final
+
+**26/10/2026**
+
+Considerando o início efetivo das atividades na segunda-feira, o desenvolvimento será dividido em:
 
 ```text
-Jonathan
-→ garante que os dados possam ser armazenados/consultados.
+Sprint 1
+05/10 → 11/10
 
-Carlos
-→ garante que as regras de negócio utilizem esses dados corretamente.
+Sprint 2
+12/10 → 18/10
+
+Sprint 3
+19/10 → 25/10
+
+Entrega final
+26/10
+```
+
+Portanto, não serão utilizadas 8 sprints.
+
+O projeto terá **3 Sprints principais**, cada uma com duração de uma semana, e **26/10 será reservado para fechamento, validação e entrega final**.
+
+---
+
+# 25. SPRINT 1 — Fundação + Contrato da API
+
+## Período
+
+**05/10/2026 → 11/10/2026**
+
+## Objetivo
+
+Criar a base funcional do backend e estabelecer o contrato que permitirá o trabalho paralelo com o frontend.
+
+---
+
+## Carlos
+
+### Tarefas
+
+* Estruturar Controllers.
+* Estruturar Services.
+* Criar o padrão de respostas da API.
+* Definir endpoints iniciais.
+* Criar estrutura inicial de autenticação.
+* Definir tratamento de erros.
+* Criar primeiros endpoints de teste.
+* Documentar o contrato inicial.
+
+### Entregáveis
+
+```text
+Controllers estruturados
+Services estruturados
+API Health funcionando
+Padrão de resposta definido
+Endpoints documentados
+Fluxo inicial de autenticação definido
 ```
 
 ---
 
-# 30. 🗓️ Sprints
+## Jonathan
 
-Cada Sprint possui duração de **1 semana**.
+### Tarefas
 
-O objetivo é terminar cada Sprint com uma entrega funcional.
+* Configurar Firebase Admin SDK.
+* Validar conexão com Firestore.
+* Criar Repository Interfaces.
+* Criar Firebase Repositories iniciais.
+* Definir coleções.
+* Criar Models.
+* Criar Schemas iniciais.
+* Criar testes de conexão.
 
----
-
-# 🟦 SPRINT 1 — Infraestrutura e contrato
-
-### Objetivo
-
-Deixar a base do backend pronta e estabelecer o contrato com o frontend.
-
-### Carlos
-
-* revisar Controllers;
-* configurar estrutura inicial da API;
-* criar health check;
-* preparar estrutura de respostas;
-* iniciar documentação dos endpoints.
-
-### Jonathan
-
-* configurar Firebase;
-* validar Firestore;
-* criar Repository Interfaces;
-* definir estrutura inicial das collections;
-* validar conexão de leitura/escrita.
-
-### Ambos
-
-* validar arquitetura;
-* definir entidades;
-* definir contrato inicial da API;
-* configurar testes.
-
-### Entrega
+### Entregáveis
 
 ```text
-Django funcionando
-+
-Firebase funcionando
-+
+Firebase conectado
 Firestore funcionando
-+
-API Health Check
-+
-Contrato inicial definido
+Repositories estruturados
+Models iniciais
+Schemas iniciais
+Teste de conexão funcionando
 ```
 
 ---
 
-# 🟩 SPRINT 2 — Autenticação e usuários
+## Carlos + Jonathan
 
-### Objetivo
-
-Implementar usuários e autenticação.
-
-### Carlos
-
-* AuthController;
-* AuthService;
-* middleware de autenticação;
-* autorização por role;
-* endpoints de usuário.
-
-### Jonathan
-
-* User Model;
-* User Schema;
-* IUserRepository;
-* FirebaseUserRepository;
-* collection `users`.
-
-### Ambos
-
-* testes;
-* integração;
-* validação do contrato.
-
-### Entrega
+Até **11/10**, os dois devem entregar juntos:
 
 ```text
-Login
-↓
-Token
-↓
-Django
-↓
-Usuário autenticado
-↓
-Perfil
+Contrato inicial da API
+        +
+Estrutura Firestore
+        +
+Autenticação definida
+        +
+Endpoints iniciais documentados
 ```
 
 ---
 
-# 🟨 SPRINT 3 — Desafios
+## Integração com Alane e Samara
 
-### Objetivo
+Alane e Samara já poderão:
 
-Implementar o sistema de desafios.
+* criar os Services do frontend;
+* criar mocks;
+* estruturar páginas;
+* criar componentes;
+* consumir os JSONs definidos no contrato.
 
-### Carlos
+Não devem esperar a API completa.
 
-* ChallengeController;
-* ChallengeService;
-* regras de conclusão;
-* permissões administrativas.
+---
 
-### Jonathan
+# 26. SPRINT 2 — Funcionalidades principais
 
-* Challenge Model;
-* Challenge Schema;
-* Challenge Repository;
-* Firestore `challenges`.
+## Período
 
-### Ambos
+**12/10/2026 → 18/10/2026**
 
-* testes;
-* documentação;
-* integração com frontend.
+## Objetivo
 
-### Entrega
+Implementar as principais funcionalidades do sistema e iniciar a integração real entre frontend e backend.
+
+---
+
+## Carlos
+
+### Tarefas
+
+Implementar:
 
 ```text
-Listar desafios
-Criar desafio
-Editar desafio
-Desativar desafio
-Consultar desafio
+UserService
+ChallengeService
+PointsService
+RankingService
 ```
 
----
+Criar endpoints:
 
-# 🟧 SPRINT 4 — Pontuação e níveis
+```http
+GET /api/users/{userId}/
+PATCH /api/users/{userId}/
 
-### Objetivo
+GET /api/challenges/
+GET /api/challenges/{challengeId}/
+POST /api/challenges/
 
-Implementar o núcleo da gamificação.
+GET /api/users/{userId}/points/
+GET /api/users/{userId}/points/history/
 
-### Carlos
+GET /api/ranking/
+GET /api/ranking/me/
 
-* PointsService;
+POST /api/challenges/{challengeId}/complete/
+```
+
+Implementar:
+
 * regras de pontuação;
-* regras de nível;
 * conclusão de desafios;
-* integração entre desafio e pontos.
+* evolução de nível;
+* permissões de administrador;
+* respostas de erro.
 
-### Jonathan
+---
 
-* Points Model;
-* Points Schema;
-* Points Repository;
-* histórico de pontos.
+## Jonathan
 
-### Ambos
+### Tarefas
 
-* testes;
-* validação de cálculos;
-* integração com frontend.
-
-### Entrega
+Implementar os Repositories:
 
 ```text
-Desafio concluído
-       ↓
-Pontos recebidos
-       ↓
-Total atualizado
-       ↓
-Nível recalculado
+FirebaseUserRepository
+FirebaseChallengeRepository
+FirebasePointsRepository
 ```
+
+Implementar:
+
+* criação de usuários;
+* consulta de usuários;
+* atualização;
+* criação de desafios;
+* consulta de desafios;
+* atualização de desafios;
+* registro de pontos;
+* consulta do histórico;
+* consulta dos usuários para ranking.
 
 ---
 
-# 🟥 SPRINT 5 — Ranking
+## Integração com Alane e Samara
 
-### Objetivo
-
-Implementar o ranking dos usuários.
-
-### Carlos
-
-* RankingService;
-* regras de ordenação;
-* posição;
-* empates;
-* RankingController.
-
-### Jonathan
-
-* consultas necessárias no Firestore;
-* otimização das consultas;
-* suporte à paginação, se necessário.
-
-### Ambos
-
-* testes;
-* integração com frontend.
-
-### Entrega
+Durante essa sprint deverá começar a troca de:
 
 ```text
-Ranking geral
-+
-posição do usuário
-+
-pontuação
-+
-nível
+MOCK
+ ↓
+API REAL
 ```
 
----
+A integração deverá acontecer endpoint por endpoint.
 
-# 🟪 SPRINT 6 — Dashboard e indicadores
-
-### Objetivo
-
-Fornecer os dados necessários para o dashboard.
-
-### Carlos
-
-* ReportService;
-* DashboardService;
-* endpoints de indicadores;
-* agregação dos dados.
-
-### Jonathan
-
-* consultas Firestore;
-* estrutura dos dados de relatório;
-* otimização das consultas.
-
-### Ambos
-
-* contrato dos gráficos;
-* testes;
-* integração com frontend.
-
-### Entrega
+Exemplo:
 
 ```text
-Dashboard
-├── Pontos
-├── Nível
-├── Desafios
-├── Ranking
-├── Progresso
-└── Indicadores
+Ranking
+↓
+Frontend implementado
+↓
+Contrato validado
+↓
+Endpoint implementado
+↓
+Frontend troca mock pela API
+↓
+Teste
 ```
 
----
-
-# ⬛ SPRINT 7 — Integração e estabilização
-
-### Objetivo
-
-Integrar todas as partes.
-
-### Carlos
-
-* correção dos endpoints;
-* tratamento de erros;
-* validação de autenticação;
-* integração final.
-
-### Jonathan
-
-* revisão do Firestore;
-* correção de consultas;
-* performance;
-* consistência dos dados.
-
-### Ambos
-
-* testes de integração;
-* correção de bugs;
-* revisão de código;
-* documentação;
-* suporte ao frontend.
-
-### Entrega
-
-Backend integrado com frontend.
+Não esperar o backend inteiro ficar pronto para integrar.
 
 ---
 
-# 🏁 SPRINT 8 — Finalização
+# 27. SPRINT 3 — Dashboard + Integração final
 
-### Objetivo
+## Período
 
-Preparar o sistema para apresentação/entrega.
+**19/10/2026 → 25/10/2026**
 
-### Ambos
+## Objetivo
 
-* testes finais;
-* documentação;
-* revisão de segurança;
-* revisão das APIs;
-* limpeza do código;
-* correção de bugs;
-* validação do ambiente de produção.
+Finalizar o backend, integrar completamente com o frontend e corrigir problemas encontrados.
 
-### Entrega
+---
+
+## Carlos
+
+### Tarefas
+
+* Finalizar `DashboardService`.
+* Finalizar `DashboardController`.
+* Criar endpoint:
+
+```http
+GET /api/dashboard/
+```
+
+* Finalizar regras de ranking.
+* Revisar autenticação.
+* Revisar autorização.
+* Padronizar respostas.
+* Corrigir bugs encontrados na integração.
+* Testar todos os endpoints.
+
+---
+
+## Jonathan
+
+### Tarefas
+
+* Finalizar `FirebaseReportRepository`.
+* Finalizar estrutura de `reports`.
+* Otimizar consultas Firestore.
+* Revisar índices necessários.
+* Validar consistência dos dados.
+* Corrigir problemas de persistência.
+* Testar operações do Firestore.
+* Apoiar correções encontradas durante a integração.
+
+---
+
+## Carlos + Jonathan
+
+Durante essa sprint:
 
 ```text
 Backend
-+
+   ↕
 Frontend
-+
-Firebase
-+
+```
+
+deverá ser testado de ponta a ponta.
+
+Devem verificar:
+
+* login;
+* autenticação;
+* usuário;
+* desafios;
+* conclusão de desafios;
+* pontuação;
+* nível;
+* ranking;
+* dashboard;
+* permissões;
+* erros;
+* carregamento;
+* respostas vazias;
+* dados inexistentes.
+
+---
+
+# 28. Integração final com Alane e Samara
+
+Até **25/10**, os mocks principais deverão ter sido substituídos pelas chamadas reais da API.
+
+Fluxo esperado:
+
+```text
+React
+  ↓
+Service do Frontend
+  ↓
+Django REST API
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
 Firestore
-+
-API
-+
+```
+
+A equipe deverá evitar deixar a integração real para o dia 26.
+
+---
+
+# 29. 26/10 — Entrega final
+
+## Data
+
+**26/10/2026**
+
+O dia 26 não deverá ser utilizado para desenvolvimento de novas funcionalidades.
+
+Deverá ser utilizado para:
+
+* validação final;
+* correção de bugs críticos;
+* testes;
+* revisão do README;
+* revisão do contrato da API;
+* organização do Git;
+* conferência do frontend;
+* conferência do backend;
+* demonstração do sistema.
+
+---
+
+# 30. Entregáveis finais
+
+Até **26/10/2026**, o projeto deverá possuir:
+
+### Backend
+
+```text
+Django funcionando
+Firebase funcionando
+Firestore funcionando
+Firebase Authentication integrado
+Controllers
+Services
+Repositories
+Models
+Schemas
+Middleware
+Tratamento de erros
 Testes
-+
+API REST
 Documentação
 ```
 
----
-
-# 31. ⏱️ Prazo de cada Sprint
-
-Cada Sprint possui:
+### Frontend
 
 ```text
-Duração: 1 semana
+React + Vite
+Login
+Dashboard
+Perfil
+Desafios
+Pontuação
+Ranking
+Indicadores
+Integração com API
 ```
 
-Fluxo recomendado:
+### Integração
 
 ```text
-SEGUNDA
-Planejamento
-    ↓
-TERÇA–QUINTA
-Desenvolvimento
-    ↓
-SEXTA
-Integração + testes
-    ↓
-FIM DA SPRINT
-Entrega
+Frontend
+   ↓
+API
+   ↓
+Backend
+   ↓
+Firestore
 ```
 
-A Sprint só deve ser considerada concluída quando a funcionalidade estiver:
-
-```text
-Implementada
-+
-Testada
-+
-Integrada
-+
-Documentada
-```
+funcionando de ponta a ponta.
 
 ---
 
-# 32. 🔀 Fluxo de desenvolvimento
+# 31. Definition of Done
 
-Para cada tarefa:
+Uma tarefa somente será considerada concluída quando:
+
+* código implementado;
+* código testado;
+* integração realizada quando aplicável;
+* resposta da API validada;
+* tratamento de erro implementado;
+* documentação atualizada;
+* código versionado no Git;
+* revisão realizada.
+
+Não considerar:
 
 ```text
-1. Criar branch
-2. Implementar
-3. Testar
-4. Commit
-5. Push
-6. Pull Request
-7. Code Review
-8. Merge
+"o código está pronto na minha máquina"
 ```
+
+como tarefa concluída.
+
+Considerar:
+
+```text
+Implementado
++
+Testado
++
+Integrado
++
+Versionado
++
+Documentado
+```
+
+---
+
+# 32. Git e branches
+
+Recomendação:
+
+```text
+main
+│
+├── develop
+│
+├── feature/users
+├── feature/challenges
+├── feature/points
+├── feature/ranking
+└── feature/dashboard
+```
+
+Cada integrante deverá trabalhar em sua própria branch.
 
 Exemplo:
 
 ```bash
-git checkout -b feature/challenges
+git checkout -b feature/ranking
 ```
 
-Depois:
-
-```bash
-git add .
-git commit -m "feat: implementa desafios"
-git push origin feature/challenges
-```
-
----
-
-# 33. 📝 Padrão de commits
-
-Utilizar Conventional Commits.
-
-Exemplos:
+Commits devem ser objetivos:
 
 ```text
-feat: adiciona endpoint de desafios
+feat: cria endpoint de ranking
+feat: implementa repository de usuários
 fix: corrige cálculo de pontos
-test: adiciona testes de ranking
-refactor: separa regra de pontuação
+test: adiciona testes do ranking
 docs: atualiza contrato da API
-chore: atualiza dependências
 ```
 
 ---
 
-# 34. 🧪 Definition of Done
+# 33. Regra principal de integração
 
-Uma tarefa só está concluída quando:
+O projeto será desenvolvido em paralelo.
+
+Portanto:
 
 ```text
-[ ] Código implementado
-[ ] Arquitetura respeitada
-[ ] SOLID respeitado
-[ ] Testes criados
-[ ] Testes passando
-[ ] Endpoint documentado
-[ ] Contrato definido
-[ ] Frontend consegue consumir
-[ ] Erros tratados
-[ ] Code review realizado
+Carlos + Jonathan
+        ↓
+Contrato da API
+        ↓
+Alane + Samara
+        ↓
+Frontend utilizando Mock
+        ↓
+Backend implementa endpoint
+        ↓
+Integração
+        ↓
+Teste
 ```
+
+Isso evita que o frontend fique parado esperando o backend.
 
 ---
 
-# 35. 🚨 Regras importantes para Carlos e Jonathan
+# 34. Comunicação entre as equipes
 
-### 1. Não acessar Firestore diretamente no Controller.
-
-Errado:
+Antes de implementar uma funcionalidade que será consumida pelo frontend, Carlos e Jonathan deverão informar:
 
 ```text
-Controller
-    ↓
-Firestore
+Endpoint
+Método HTTP
+Parâmetros
+Headers
+Autenticação
+Body
+Resposta de sucesso
+Resposta de erro
+Status HTTP
 ```
-
-Correto:
-
-```text
-Controller
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Firestore
-```
-
----
-
-### 2. Não colocar regra de negócio no Repository.
-
-Repository salva e consulta.
-
-Quem decide **o que deve acontecer** é o Service.
-
----
-
-### 3. Não confiar no frontend para segurança.
-
-Mesmo que o botão de administrador não apareça no frontend, o backend precisa verificar:
-
-```text
-usuário autenticado?
-+
-usuário possui permissão?
-```
-
----
-
-### 4. O contrato da API deve ser combinado antes da integração.
-
-Não alterar silenciosamente:
-
-```text
-endpoint
-campo
-tipo
-status HTTP
-estrutura JSON
-```
-
-porque isso pode quebrar o frontend.
-
----
-
-### 5. Toda mudança de contrato deve ser comunicada.
 
 Exemplo:
 
-Antes:
+```text
+Endpoint:
+GET /api/ranking/
 
-```json
+Autenticação:
+Bearer Token
+
+Resposta:
 {
-  "points": 100
+    "success": true,
+    "data": [...]
 }
 ```
 
-Depois:
+Alane e Samara deverão desenvolver utilizando esse contrato.
 
-```json
-{
-  "score": 100
-}
-```
-
-Essa mudança quebra o frontend.
-
-Portanto, deve ser discutida antes.
+Se o contrato mudar, a alteração deverá ser comunicada antes de modificar o frontend.
 
 ---
 
-# 36. 🚀 Como executar
+# 35. Regra para mudanças na API
 
-## Backend
+Evitar alterar um endpoint já utilizado pelo frontend sem comunicar a equipe.
 
-```bash
-cd backend
-```
-
-Ativar ambiente:
-
-```bash
-venv\Scripts\activate
-```
-
-Instalar dependências:
-
-```bash
-pip install -r requirements.txt
-```
-
-Verificar Django:
-
-```bash
-python manage.py check
-```
-
-Executar migrations:
-
-```bash
-python manage.py migrate
-```
-
-Executar testes:
-
-```bash
-pytest -v
-```
-
-Executar servidor:
-
-```bash
-python manage.py runserver
-```
-
-API:
+Caso seja necessário alterar:
 
 ```text
-http://127.0.0.1:8000/
-```
-
-Health check:
-
-```text
-http://127.0.0.1:8000/api/health/
+1. Comunicar alteração
+2. Atualizar contrato
+3. Atualizar backend
+4. Atualizar frontend
+5. Testar integração
 ```
 
 ---
 
-# 37. 🌐 Frontend
+# 36. Resultado esperado em 26/10
 
-Em outro terminal:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Normalmente:
+Ao final do projeto, o sistema deverá apresentar:
 
 ```text
-http://localhost:5173/
+              GPADS
+                │
+        Dashboard Gamificada
+                │
+        ┌───────┴────────┐
+        │                │
+      Usuário          Admin
+        │                │
+   ┌────┼────┐       ┌───┼────┐
+   │    │    │       │   │    │
+ Perfil Desafios Ranking  │ Dashboard
+   │    │    │           │
+   └────┼────┘        Gestão
+        │
+     Pontos
+        │
+      Nível
 ```
+
+Com a arquitetura:
+
+```text
+React + Vite
+      ↓
+Django REST API
+      ↓
+Services
+      ↓
+Repositories
+      ↓
+Firebase Firestore
+```
+
+e com o frontend e backend integrados até **26/10/2026**.
 
 ---
 
-# 38. 🔗 Integração
+# 37. Resumo das responsabilidades
 
-Durante o desenvolvimento:
-
-```text
-                 ┌──────────────┐
-                 │   FRONTEND   │
-                 │ React + Vite │
-                 └──────┬───────┘
-                        │
-                     REST API
-                        │
-                        ▼
-                 ┌──────────────┐
-                 │    DJANGO    │
-                 └──────┬───────┘
-                        │
-                 ┌──────▼───────┐
-                 │ CONTROLLER   │
-                 └──────┬───────┘
-                        │
-                 ┌──────▼───────┐
-                 │   SERVICE    │
-                 └──────┬───────┘
-                        │
-                 ┌──────▼───────┐
-                 │  REPOSITORY  │
-                 └──────┬───────┘
-                        │
-                 ┌──────▼───────┐
-                 │  FIRESTORE   │
-                 └──────────────┘
-```
+| Pessoa                | Responsabilidade principal                                   |
+| --------------------- | ------------------------------------------------------------ |
+| **Carlos**            | Controllers, Services, regras de negócio, autenticação e API |
+| **Jonathan**          | Models, Schemas, Repositories e Firestore                    |
+| **Alane**             | Frontend, telas, componentes e integração visual             |
+| **Samara**            | Frontend, componentes, serviços e integração com API         |
+| **Carlos + Jonathan** | Contrato da API e integração backend/frontend                |
+| **Todos**             | Testes, revisão, integração e entrega                        |
 
 ---
 
-# 39. 🎯 Objetivo final
+# 38. Resumo do cronograma
 
-O objetivo não é apenas fazer endpoints funcionarem.
-
-O objetivo é construir um backend:
-
-* organizado;
-* testável;
-* seguro;
-* escalável;
-* fácil de manter;
-* desacoplado do frontend;
-* preparado para evolução.
-
-A principal regra do projeto é:
-
-> **O frontend consome contratos. O backend implementa regras. O repository gerencia persistência. O Firestore armazena os dados.**
-
-Se cada integrante respeitar essa divisão, Carlos e Jonathan poderão desenvolver simultaneamente sem ficarem bloqueados um pelo outro.
+| Período           | Sprint   | Objetivo                                                 |
+| ----------------- | -------- | -------------------------------------------------------- |
+| **05/10 → 11/10** | Sprint 1 | Fundação, Firebase, arquitetura e contrato da API        |
+| **12/10 → 18/10** | Sprint 2 | Usuários, desafios, pontos, ranking e integração inicial |
+| **19/10 → 25/10** | Sprint 3 | Dashboard, integração completa, testes e estabilização   |
+| **26/10**         | Entrega  | Validação final e apresentação                           |
 
 ---
 
-# 40. 📌 Resumo rápido para a equipe
+# 39. Prioridade do projeto
+
+Como o prazo é curto, a prioridade deve ser:
 
 ```text
-CARLOS
-│
-├── Controllers
-├── Services
-├── Auth
-├── Middleware
-├── Regras de negócio
-└── Integração da API
-
-JONATHAN
-│
-├── Models
-├── Schemas
-├── Repository Interfaces
-├── Firebase Repositories
-├── Firestore
-└── Persistência
-
-AMBOS
-│
-├── Contrato da API
-├── Testes
-├── Integração
-├── Code Review
-└── Documentação
+1. Autenticação
+2. Usuários
+3. Desafios
+4. Pontuação
+5. Ranking
+6. Dashboard
+7. Integração
+8. Testes
+9. Melhorias
 ```
 
-E o fluxo que todos devem memorizar:
+Funcionalidades que não forem essenciais para a demonstração final não devem comprometer as funcionalidades principais.
+
+---
+
+# 40. Regra final para Carlos e Jonathan
+
+O objetivo não é simplesmente "fazer o backend".
+
+O objetivo é entregar uma **API funcional, previsível e documentada**, que Alane e Samara consigam consumir sem precisar conhecer a implementação interna do Django ou do Firestore.
+
+A responsabilidade de vocês pode ser resumida assim:
 
 ```text
-FRONTEND
-   ↓
-CONTROLLER
-   ↓
-SERVICE
-   ↓
-REPOSITORY INTERFACE
-   ↓
-FIREBASE REPOSITORY
-   ↓
-FIRESTORE
+Jonathan
+        ↓
+"Garantir que os dados sejam armazenados
+e recuperados corretamente."
+
+Carlos
+        ↓
+"Garantir que as regras de negócio
+e a API funcionem corretamente."
+
+Alane + Samara
+        ↓
+"Garantir que o usuário consiga
+utilizar essas funcionalidades no frontend."
+
+Todos
+        ↓
+"Garantir que tudo funcione integrado
+até 26/10/2026."
 ```
 
-Esse fluxo é a base arquitetural do backend do GPADS Dashboard Gamificada.
+**Prazo final: 26/10/2026.**
