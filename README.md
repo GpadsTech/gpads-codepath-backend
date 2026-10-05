@@ -1,6 +1,6 @@
 # GPADS CodePath — Backend
 
-Backend responsável pelas regras de negócio, autenticação, persistência de dados, pontuação, ranking, dashboard e integração com o GitHub da plataforma **GPADS Dashboard Gamificada**.
+Backend responsável pelas regras de negócio, autenticação, persistência de dados, pontuação, ranking, dashboard e integração com o GitHub da plataforma **GPADS CodePath**.
 
 O projeto utiliza **Django + Django REST Framework + Firebase Firestore**, seguindo uma arquitetura organizada em camadas para facilitar manutenção, testes e integração com o frontend.
 
