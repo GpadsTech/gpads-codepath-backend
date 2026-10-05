@@ -1,0 +1,12 @@
+Django
+djangorestframework
+django-cors-headers
+
+firebase-admin
+
+python-dotenv
+pydantic
+pydantic-settings
+
+pytest
+pytest-django

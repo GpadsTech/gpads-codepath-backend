@@ -1,0 +1,1 @@
+# Implementa a persistência dos desafios no Firestore

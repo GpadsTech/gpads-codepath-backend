@@ -1,0 +1,1 @@
+# Intercepta requisições protegidas e valida o token do Firebase Authentication.

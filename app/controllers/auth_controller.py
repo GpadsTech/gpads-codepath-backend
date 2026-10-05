@@ -1,0 +1,1 @@
+# Recebe e responde às requisições relacionadas à autenticação

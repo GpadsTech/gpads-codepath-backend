@@ -1,0 +1,1 @@
+# Controla as requisições relacionadas à pontuação

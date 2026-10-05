@@ -1,0 +1,1 @@
+# Define o contrato de persistência dos desafios

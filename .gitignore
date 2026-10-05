@@ -1,0 +1,47 @@
+# Ambiente virtual
+venv/
+.venv/
+env/
+
+# Django
+db.sqlite3
+__pycache__/
+*.py[cod]
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Permite versionar o modelo de configuração
+!.env.example
+
+# Credenciais do Firebase
+credentials/
+firebase-service-account.json
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build
+build/
+dist/
+*.egg-info/

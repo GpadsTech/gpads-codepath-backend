@@ -1,0 +1,1 @@
+# Define o contrato para operações de persistência relacionadas aos usuários

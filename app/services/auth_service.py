@@ -1,0 +1,1 @@
+ # Contém as regras de negócio relacionadas à autenticação

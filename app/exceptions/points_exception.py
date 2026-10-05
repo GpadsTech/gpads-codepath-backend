@@ -1,0 +1,1 @@
+# Exceções relacionadas à pontuação.

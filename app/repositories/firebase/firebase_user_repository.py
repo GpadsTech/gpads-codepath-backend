@@ -1,0 +1,1 @@
+# Implementa o contrato de usuário utilizando o Firebase Firestore.

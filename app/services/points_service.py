@@ -1,0 +1,1 @@
+# Responsável pelas regras de negócio da pontuação
