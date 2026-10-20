@@ -1,0 +1,56 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.7.0 -- /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python
+cachedir: .pytest_cache
+django: version: 5.2.18, settings: app.config.settings (from ini)
+rootdir: /workspace/scratch/f349db0c9a15/work/backend
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1, django-4.14.0
+collecting ... collected 44 items
+
+tests/test_api.py::test_health_and_auth PASSED                           [  2%]
+tests/test_api.py::test_users_and_challenges PASSED                      [  4%]
+tests/test_api.py::test_complete_flow[0] PASSED                          [  6%]
+tests/test_api.py::test_complete_flow[85] PASSED                         [  9%]
+tests/test_api.py::test_complete_flow[100] PASSED                        [ 11%]
+tests/test_api.py::test_invalid_points[-1] PASSED                        [ 13%]
+tests/test_api.py::test_invalid_points[101] PASSED                       [ 15%]
+tests/test_api.py::test_invalid_points[1.5] PASSED                       [ 18%]
+tests/test_api.py::test_invalid_points[True] PASSED                      [ 20%]
+tests/test_api.py::test_invalid_points[85] PASSED                        [ 22%]
+tests/test_api.py::test_invalid_points[None] PASSED                      [ 25%]
+tests/test_api.py::test_rejection_resubmission PASSED                    [ 27%]
+tests/test_api.py::test_scope_and_forgery PASSED                         [ 29%]
+tests/test_api.py::test_bad_github_paths[../x] PASSED                    [ 31%]
+tests/test_api.py::test_bad_github_paths[/activities] PASSED             [ 34%]
+tests/test_api.py::test_bad_github_paths[activities/../x] PASSED         [ 36%]
+tests/test_api.py::test_bad_github_paths[activities\\x] PASSED           [ 38%]
+tests/test_api.py::test_bad_github_paths[activities/%2e%2e/x] PASSED     [ 40%]
+tests/test_api.py::test_bad_github_paths[.github/workflows] PASSED       [ 43%]
+tests/test_api.py::test_bad_github_paths[activities-evil] PASSED         [ 45%]
+tests/test_api.py::test_github_failure_and_retry PASSED                  [ 47%]
+tests/test_api.py::test_concurrent_evaluation PASSED                     [ 50%]
+tests/test_api.py::test_persistence_rollback PASSED                      [ 52%]
+tests/test_api.py::test_ranking_ties PASSED                              [ 54%]
+tests/test_api.py::test_missing_and_empty PASSED                         [ 56%]
+tests/test_api.py::test_publication_lease_recovery PASSED                [ 59%]
+tests/test_api.py::test_publication_checkpoint_after_remote_success PASSED [ 61%]
+tests/test_api.py::test_unauthorized_repository_and_revoked_leadership PASSED [ 63%]
+tests/test_api.py::test_inactive_challenge_and_foreign_resubmit PASSED   [ 65%]
+tests/test_api.py::test_report_size_limit PASSED                         [ 68%]
+tests/test_api.py::test_self_evaluation_even_with_leader_role PASSED     [ 70%]
+tests/test_api.py::test_concurrent_publication_is_claimed_once PASSED    [ 72%]
+tests/test_firestore.py::test_emulator_atomic_write_and_read SKIPPED     [ 75%]
+tests/test_integrations.py::test_github_upload_and_safe_replay PASSED    [ 77%]
+tests/test_integrations.py::test_github_http_failure[401] PASSED         [ 79%]
+tests/test_integrations.py::test_github_http_failure[403] PASSED         [ 81%]
+tests/test_integrations.py::test_github_http_failure[409] PASSED         [ 84%]
+tests/test_integrations.py::test_github_http_failure[422] PASSED         [ 86%]
+tests/test_integrations.py::test_github_http_failure[500] PASSED         [ 88%]
+tests/test_integrations.py::test_github_timeout_and_content_conflict PASSED [ 90%]
+tests/test_integrations.py::test_token_verifier_delegates_sdk PASSED     [ 93%]
+tests/test_integrations.py::test_firestore_error_is_sanitized PASSED     [ 95%]
+tests/test_integrations.py::test_partial_github_publication_recovery PASSED [ 97%]
+tests/test_integrations.py::test_firestore_transaction_read_write_contract PASSED [100%]
+
+======================== 43 passed, 1 skipped in 0.24s =========================

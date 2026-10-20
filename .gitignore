@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+credentials/
+*service-account*.json
+.venv/
+venv/
+.credentials/
+testar_codepath.py
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.sqlite3
