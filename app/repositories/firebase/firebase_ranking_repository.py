@@ -1,1 +1,0 @@
-# Implementa as consultas necessárias para o ranking

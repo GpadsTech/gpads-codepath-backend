@@ -1,1 +1,0 @@
-# Controla as requisições relacionadas aos usuários.

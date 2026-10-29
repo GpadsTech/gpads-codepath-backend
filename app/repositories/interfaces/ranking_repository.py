@@ -1,1 +1,0 @@
-# Define o contrato para consultas do ranking

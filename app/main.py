@@ -1,2 +1,5 @@
-# Ponto de entrada da aplicação. Inicializa o FastAPI, configura recursos globais
-# e registra as rotas.
+"""Compatibility entry point for WSGI servers; Django owns routing."""
+
+from app.config.wsgi import application
+
+__all__ = ["application"]
