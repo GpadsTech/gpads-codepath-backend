@@ -1,12 +1,12 @@
-Django
-djangorestframework
-django-cors-headers
+Django>=5.2,<5.3
+djangorestframework>=3.16,<4
+django-cors-headers>=4.7,<5
+firebase-admin>=6.9,<8
+python-dotenv>=1,<2
+pydantic>=2,<3
+requests>=2.32,<3
+pytest>=8,<10
+pytest-django>=4.11,<5
 
-firebase-admin
-
-python-dotenv
-pydantic
-pydantic-settings
-
-pytest
-pytest-django
+gunicorn>=23,<24
+tzdata>=2025.1

@@ -1,1 +1,7 @@
-# Define o contrato para operações de persistência relacionadas aos usuários
+from typing import Protocol
+
+from app.repositories.interfaces.base import DocumentRepository
+
+
+class UserRepository(DocumentRepository, Protocol):
+    """Persistence contract for user documents."""

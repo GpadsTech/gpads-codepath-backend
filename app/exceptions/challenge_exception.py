@@ -1,1 +1,0 @@
-# Exceções relacionadas aos desafios.
