@@ -1,3 +1,6 @@
+from app.config.cells import CELLS
+
+
 class LevelPolicy:
     """Preserve the provisioned level until an official progression rule exists."""
 
@@ -23,6 +26,7 @@ class DashboardService:
         completed = {r["challengeId"] for r in evaluated}
         rank = self.ranking.me(actor)
         return {
+            "cellName": next((c["name"] for c in CELLS if c["id"] == actor.cellId), actor.cellId),
             "points": self.points.total(actor.id),
             "level": self.levels.current(actor),
             "rankingPosition": rank["position"] if rank else None,

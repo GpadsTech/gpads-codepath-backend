@@ -52,5 +52,6 @@ urlpatterns += [
 from app.controllers.ai_controller import AIController
 urlpatterns += [path("api/ai/report/", AIController.as_view())]
 
-from app.controllers.registration_controller import RegistrationController
+from app.controllers.registration_controller import RegistrationController, CellController
 urlpatterns += [path("api/students/", RegistrationController.as_view())]
+urlpatterns += [path("api/cells/", CellController.as_view())]
