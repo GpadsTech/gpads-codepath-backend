@@ -6,7 +6,7 @@ class RegistrationInput(StrictSerializer):
     name = serializers.CharField(max_length=120)
     email = serializers.EmailField(max_length=254)
     password = serializers.CharField(min_length=8, max_length=128, trim_whitespace=False, write_only=True)
-    role = serializers.ChoiceField(choices=['student'])
+    role = serializers.ChoiceField(choices=['student', 'admin'])
     cellId = serializers.RegexField(r'^[A-Za-z0-9_-]{1,128}$', required=False)
 
 class RegistrationController(Controller):
@@ -15,3 +15,8 @@ class RegistrationController(Controller):
 
     def post(self, request):
         return self.ok(self.services.registration.create(request.user, validate(RegistrationInput, request.data)), 201)
+
+
+class CellController(Controller):
+    def get(self, request):
+        return self.ok(self.services.registration.cells(request.user))

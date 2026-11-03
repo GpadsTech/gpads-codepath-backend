@@ -1,5 +1,10 @@
+import logging
+
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as drf_handler
+
+
+logger = logging.getLogger(__name__)
 
 
 class ApplicationError(Exception):
@@ -14,6 +19,13 @@ def exception_handler(exc, context):
     else:
         response = drf_handler(exc, context)
         if response is None:
+            request = context.get("request")
+            logger.error(
+                "Unhandled API exception: %s %s",
+                getattr(request, "method", "UNKNOWN"),
+                getattr(request, "path", "UNKNOWN"),
+                exc_info=(type(exc), exc, exc.__traceback__),
+            )
             code, message, status = (
                 "INTERNAL_ERROR",
                 "Não foi possível concluir a operação.",

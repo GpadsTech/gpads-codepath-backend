@@ -52,6 +52,7 @@ class ReportService:
                 )
             )
             report["history"] = []
+            report["studentName"] = user.get("name", actor.id)
             self._check_size(report)
             repos.reports.create(identifier, report)
             return report

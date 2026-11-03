@@ -12,7 +12,7 @@ Use Python 3.12+, instale requirements.txt e configure .env a partir de .env.exa
 - Verificar: python manage.py check
 - Testes sem chamadas externas: pytest -q
 - Saúde: GET /api/health/
-- Cadastro exclusivo de líderes: GET/POST /api/students/
+- Cadastro por admin/avaliador e cadastro de estudantes por líderes: GET/POST /api/students/; opções de célula: GET /api/cells/
 - IA: GET/POST /api/ai/report/
 
 Documentos users usam o UID do Firebase Authentication como ID. Não há cadastro público de líderes ou promoção de papéis pelo frontend.

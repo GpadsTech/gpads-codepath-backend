@@ -42,7 +42,7 @@ class EvaluationService:
                 report.update(
                     status="EVALUATED",
                     evaluation=evaluation,
-                    github={**target, "status": "PENDING", "attempts": 0},
+                    github={**target, "status": "PENDING", "attempts": 0, "layoutVersion": 2, "authorName": student.get("name") or report["studentId"]},
                 )
                 repos.points.create(identifier, point)
             repos.reports.patch(identifier, report)

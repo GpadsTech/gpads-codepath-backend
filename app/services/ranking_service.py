@@ -27,6 +27,7 @@ class RankingService:
                 "name": u.get("name", ""),
                 "points": totals.get(u["id"], 0),
                 "level": u.get("level", 1),
+                "avatarId": u.get("avatarId", "nova"),
             }
             for u in self.repos.users.list()
             if u.get("role") in ("student", "user")
