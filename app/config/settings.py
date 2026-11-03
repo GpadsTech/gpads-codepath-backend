@@ -153,3 +153,17 @@ CORS_ALLOWED_ORIGINS = [v.strip().rstrip("/") for v in FRONTEND_URL.split(",") i
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+
+# Exceções convertidas em JSON pelo DRF precisam de saída explícita no Render.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "loggers": {
+        "app.exceptions": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
+}
